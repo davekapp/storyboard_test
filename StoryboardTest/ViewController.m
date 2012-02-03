@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "OtherGreatController.h"
+#import "GreatPopover.h"
 
 @implementation ViewController
+@synthesize popoverController;
 
 - (void)didReceiveMemoryWarning
 {
@@ -59,6 +62,35 @@
   } else {
       return YES;
   }
+}
+
+- (IBAction)goToYonderManually:(id)sender {
+  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
+  OtherGreatController *other = [storyboard instantiateViewControllerWithIdentifier:@"yonderViewController"];
+  other.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+  [self presentViewController:other animated:YES completion:nil];
+}
+
+- (IBAction)leftPop:(id)sender {
+  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+  GreatPopover *popover = [storyboard instantiateViewControllerWithIdentifier:@"happyPopover"];
+  self.popoverController = [[UIPopoverController alloc] initWithContentViewController:popover];
+  //popoverController.popoverContentSize = CGSizeMake(320, 200);
+  self.popoverController.delegate = self;
+  [self.popoverController presentPopoverFromRect:((UIView*)sender).frame
+                     inView:self.view 
+                     permittedArrowDirections:UIPopoverArrowDirectionRight 
+                     animated:YES];
+} 
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+  if ([segue isKindOfClass:[UIStoryboardPopoverSegue class]]) {
+    ((UIStoryboardPopoverSegue*)segue).popoverController.delegate = self;
+  }
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+  NSLog(@"NOES POPOVER TEH GONES");
 }
 
 @end
